@@ -24,11 +24,14 @@ int main() {
 	if(result < 0) {
 		perror("write() - main.c");
 		return -3;
-
 	}
 
+	result = close(fd);
+	if(result == -1) {
+		perror("close() - main.c");
+		return -4;
 
-
+	}	
 
 
 
