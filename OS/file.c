@@ -32,5 +32,9 @@ int main() {
 		return -4;
 
 	}	
+<<<<<<< HEAD
+=======
+
+>>>>>>> 697b920b2c47a07ef909389b4dc90782d0fcfde0
 	return 0;
 }
