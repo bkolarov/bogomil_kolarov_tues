@@ -15,8 +15,6 @@ end
 arr = arr.sort_by { |x| x[2].to_i }
 arr = arr.reverse()
 
-puts arr
-
 file_name = file_name.split('.csv')
 
 CSV.open("#{file_name[0]}_result4.csv", "wb") do |f|
