@@ -19,7 +19,7 @@ arr = arr.sort_by{|x| x[1].to_i}
 file_name = file_name.split('.csv')
 p file_name
 
-CSV.open("#{file_name[0]} + _result2.csv", "wb") do |f|
+CSV.open("#{file_name[0]}_result2.csv", "wb") do |f|
 	arr.each do |x|
 		f << x
 	end
