@@ -8,22 +8,23 @@
 //for simple shell implementation program. 
 //----------------------------
 
-/*
-1.getline
-2.parse it to a split function
-2.1 split the line by spaces
-2.2 return the new line in format ["word1","word2"]
-*/
-
 #include<stdio.h> 
 #include<stdlib.h> 
 #include<unistd.h> 
 #include<string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
+
+//--------------------------------- 
+//Function: parse_cmdline(const char* cmdline) 
+//Тази функция разделя на части stdin 
+//и го записва. 
+//---------------------------------
 char** parse_cmdline(const char* cmdline) {
 
 	int count, word_count = 0;
-	char** line_parsed;
+	char** line_parsed, line_return;
 	char *pch, *cmdline_copy = (char*)malloc(sizeof(char)*(strlen(cmdline)+1));
 	strcpy(cmdline_copy, cmdline);
 
@@ -57,17 +58,22 @@ int main() {
 	char** cmdline;
 
 	while(1) {
+		printf("$Crash-ID: ");
 		getline(&line, &size, stdin);
-		printf("marker\n");
 		cmdline = parse_cmdline(line);
-	
 
 		pid_t pid = fork();
 		if (pid == -1) {
 			perror("fork");
 			return -1;
 		} else if(pid == 0) {
-			execv(cmdline[0], cmdline);			
+			struct stat _stat;
+				stat(cmdline[0],&_stat);
+			if(_stat.st_mode & S_IXUSR){	
+				execv(cmdline[0], cmdline);				
+			}else fprintf(stderr,"shell: Permission denied!\n");
+				perror("");
+		exit(1);
 		}else {
 			wait(NULL);
 		}
