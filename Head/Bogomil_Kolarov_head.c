@@ -38,12 +38,27 @@ void print_file(int descriptor) {
 
 	while(line_count < 10) {
 		int read_bytes = read(descriptor, buffer, 1);
+		if(read_bytes == 0) break;
 		int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);
 
-		if(*buffer == '\n' || *buffer == '\r' || *buffer == '\t') {
+		if(*buffer == '\n') {
 			++line_count;
 		}
 	}
+}
+
+int print_header(char *file_name) {
+	int write_check;
+	char *header = (char*) malloc(sizeof(char)*(strlen(file_name) + 9));
+	
+	strcat(header, "==> ");
+	strcat(header, file_name);
+	strcat(header, " <==\n");
+	write_check = write(STDOUT_FILENO, header, strlen(header));
+//	write(STDOUT_FILENO, file_name, strlen(file_name));
+//	write(STDOUT_FILENO, " <==\n", 5);
+	free(header);
+	return write_check;
 }
 
 int main(int argc, char *argv[]) {
@@ -57,11 +72,14 @@ int main(int argc, char *argv[]) {
 	} else {
 		for(file_count = 1; file_count < argc; ++file_count) {
 			if(*argv[file_count] == '-') {
+				write(STDOUT_FILENO, "==> standart input <==\n", 23);
 				stdin_support();
 				continue;
 			}
-
 			file = file_open(argv[file_count]);
+			if(argc > 2) {
+				print_header(argv[file_count]);
+			}
 			print_file(file);
 			close(file);
 		}
