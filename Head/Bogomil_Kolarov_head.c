@@ -13,77 +13,156 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void stdin_support() {
-	int line_count = 0;
-	char buffer[1];
+int stdin_support() {
+        int line_count = 0;
+        char buffer[1];
 
-	while(line_count < 10) {
-		int read_bytes = read(STDIN_FILENO, buffer, 1);
-		int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);	
-
-		if(*buffer == '\n' || *buffer == '\r' || *buffer == '\t') {
-			++line_count;
-		}
-	}
+        while(line_count < 10) {
+                int read_bytes = read(STDIN_FILENO, buffer, 1);
+				if(read_bytes == -1) {
+					return -1;
+				}
+                int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);        
+				if(write_bytes == -1) {
+					return -2;
+					continue;
+				}
+                if(*buffer == '\n' || *buffer == '\r' || *buffer == '\t') {
+                        ++line_count;
+                }
+        }
+	return 0;
 }
 
 int file_open(char* file_name) {
-	int file_descriptor = open(file_name, O_RDONLY);
-	return file_descriptor;
+        int file_descriptor = open(file_name, O_RDONLY);
+        return file_descriptor;
 }
 
-void print_file(int descriptor) {
-	int line_count = 0;
-	char buffer[1];
+int print_file(int descriptor) {
+        int line_count = 0, read_bytes = 0;
+        char buffer[1];
 
-	while(line_count < 10) {
-		int read_bytes = read(descriptor, buffer, 1);
-		if(read_bytes == 0) break;
-		int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);
+        while(line_count < 10) {
+                read_bytes = read(descriptor, buffer, 1);
+				if(read_bytes == -1) {
+					printf("in if: ");
+					return -3;
+				}
+                if(read_bytes == 0) break;
 
-		if(*buffer == '\n') {
-			++line_count;
-		}
-	}
+                int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);
+				if(write_bytes == -1) {
+					return -4;
+				}
+				
+                if(*buffer == '\n') {
+                        ++line_count;
+                }
+        }
+	return 0;
 }
 
 int print_header(char *file_name) {
-	int write_check;
-	char *header = (char*) malloc(sizeof(char)*(strlen(file_name) + 9));
-	
-	strcat(header, "==> ");
-	strcat(header, file_name);
-	strcat(header, " <==\n");
-	write_check = write(STDOUT_FILENO, header, strlen(header));
-//	write(STDOUT_FILENO, file_name, strlen(file_name));
-//	write(STDOUT_FILENO, " <==\n", 5);
-	free(header);
-	return write_check;
+        int write_check;
+        char *header = (char*) malloc(sizeof(char)*(strlen(file_name) + 10));
+        
+        strcat(header, "==> ");
+        strcat(header, file_name);
+        strcat(header, " <==\n\0");
+        write_check = write(STDOUT_FILENO, header, strlen(header));
+        free(header);
+        return write_check;
+}
+
+void error_handle(int err_num, char *file_name) {
+	char* error_message;
+
+	switch(err_num) {
+		case 1: 
+			error_message = (char*) malloc(sizeof(char)*(strlen(file_name)+48));
+			strcat(error_message, "Monkeys were unable to open \"");
+			strcat(error_message, file_name);
+			strcat(error_message, "\" for reading\n\0");
+			break;
+		case 2:
+			error_message = (char*) malloc(sizeof(char)*(strlen(file_name)+35));
+			strcat(error_message, "Monkeys couldn't read from \"");
+			strcat(error_message, file_name);
+			strcat(error_message, "\"\n\0");
+			break;
+		case 3:
+			error_message = (char*) malloc(sizeof(char)*(strlen(file_name)+40));
+			strcat(error_message, "Monkeys couldn't write \"");
+			strcat(error_message, file_name);
+			strcat(error_message, "\" to stdout\n\0");
+			break;
+		case 4:
+			perror("Reading from stdin - trolled");
+			break;
+		case 5:
+			perror("Writing to stdout - trolled");
+			break;
+
+	}
+	perror(error_message);
+	free(error_message);
 }
 
 int main(int argc, char *argv[]) {
 
-	int line_count = 0, file_count, file;
-	char buffer[1];
+        int line_count = 0, file_count, file, check;
+        char buffer[1];
 
-	if(argc == 1) {
-		stdin_support();
-		return 0;
-	} else {
-		for(file_count = 1; file_count < argc; ++file_count) {
-			if(*argv[file_count] == '-') {
-				write(STDOUT_FILENO, "==> standart input <==\n", 23);
-				stdin_support();
-				continue;
-			}
-			file = file_open(argv[file_count]);
-			if(argc > 2) {
-				print_header(argv[file_count]);
-			}
-			print_file(file);
-			close(file);
-		}
-	}
+        if(argc == 1) {
+                check = stdin_support();
+				if(check == -1) {
+					error_handle(4, "no_file");
+				}
+                return 0;
+        } else {
+                for(file_count = 1; file_count < argc; ++file_count) {
+                        if(*argv[file_count] == '-') {
+                                check = write(STDOUT_FILENO, "==> standart input <==\n", 23);
+								if(check == -1) {
+									error_handle(4, "no_file");
+									continue;
+								}
+                                check = stdin_support();
+								if(check == -1) {
+									error_handle(4, "no_file");
+								} else
+									if(check == -2) {
+										error_handle(5, "no_file");
+									}
+                                continue;
+                        }
+                        file = file_open(argv[file_count]);
+						if(file == -1) {
+							error_handle(1, argv[file_count]);
+							continue;
+						}
 
-	return 0;
+                        if(argc > 2) {
+                                check = print_header(argv[file_count]);
+								if(check == -1) {
+									error_handle(4, "no_file");
+									continue;								
+								}
+                        }
+
+                        check = print_file(file);
+						if(check == -3) {
+							error_handle(2, argv[file_count]);
+							continue;
+						} else
+							if(check == -4) {
+								error_handle(3, argv[file_count]);
+								continue;
+							}
+                        close(file);
+                }
+        }
+
+        return 0;
 }
