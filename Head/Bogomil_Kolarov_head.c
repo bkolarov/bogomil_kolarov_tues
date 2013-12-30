@@ -25,7 +25,6 @@ int stdin_support() {
                 int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);        
 				if(write_bytes == -1) {
 					return -2;
-					continue;
 				}
                 if(*buffer == '\n' || *buffer == '\r' || *buffer == '\t') {
                         ++line_count;
@@ -66,8 +65,7 @@ int print_file(int descriptor) {
 int print_header(char *file_name) {
         int write_check;
         char *header = (char*) malloc(sizeof(char)*(strlen(file_name) + 10));
-        
-        strcat(header, "==> ");
+        strcpy(header, "==> ");
         strcat(header, file_name);
         strcat(header, " <==\n\0");
         write_check = write(STDOUT_FILENO, header, strlen(header));
@@ -76,32 +74,34 @@ int print_header(char *file_name) {
 }
 
 void error_handle(int err_num, char *file_name) {
-	char* error_message;
+	char* error_message = NULL;;
 
 	switch(err_num) {
 		case 1: 
 			error_message = (char*) malloc(sizeof(char)*(strlen(file_name)+48));
-			strcat(error_message, "Monkeys were unable to open \"");
+			strcpy(error_message, "Monkeys were unable to open \"");
 			strcat(error_message, file_name);
 			strcat(error_message, "\" for reading\n\0");
 			break;
 		case 2:
 			error_message = (char*) malloc(sizeof(char)*(strlen(file_name)+35));
-			strcat(error_message, "Monkeys couldn't read from \"");
+			strcpy(error_message, "Monkeys couldn't read from \"");
 			strcat(error_message, file_name);
 			strcat(error_message, "\"\n\0");
 			break;
 		case 3:
 			error_message = (char*) malloc(sizeof(char)*(strlen(file_name)+40));
-			strcat(error_message, "Monkeys couldn't write \"");
+			strcpy(error_message, "Monkeys couldn't write \"");
 			strcat(error_message, file_name);
 			strcat(error_message, "\" to stdout\n\0");
 			break;
 		case 4:
-			perror("Reading from stdin - trolled");
+			error_message = (char*) malloc(sizeof(char)*32);
+			strcpy(error_message,"Reading from stdin - trolled\n\0");
 			break;
 		case 5:
-			perror("Writing to stdout - trolled");
+			error_message = (char*) malloc(sizeof(char)*32);
+			strcpy(error_message, "Writing to stdout - trolled\n\0");
 			break;
 
 	}
