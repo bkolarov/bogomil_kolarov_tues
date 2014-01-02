@@ -1,0 +1,6 @@
+* Chabot, Daron. "A PC-based data acquisition system for sub-atomic physics measurements." PhD diss., University of Saskatchewan, 2008. [http://ecommons.usask.ca/bitstream/handle/10388/etd-07172008-125339/djc915-mscThesis.pdf]
+
+* Constantinescu, Cristian. "Neutron Soft Error Rate Characterization of Microprocessors." Dependability Benchmarking for Computer Systems 72 (2008): 341. [http://books.google.bg/books?hl=en&lr=lang_en&id=jnGJLinXmxUC&oi=fnd&pg=PA341&dq=RTEMS&ots=RYrl2MC3Mq&sig=GFkv-oNvCIVssF0XWdToI6w_4fo&redir_esc=y#v=onepage&q&f=false]
+
+* Ardaens, Jean-Sébastien, Simone D'Amico, Dieter Ulrich, and Denis Fischer. "TanDEM-X Autonomous Formation Flying System." In 3rd International Symposium on Formation Flying, Missions and Technology, pp. 23-25. 2008. [http://elib.dlr.de/57870/1/Ardaens.pdf]
+
