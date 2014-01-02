@@ -195,7 +195,6 @@ int main(int argc, char *argv[]) {
                         }
 
                         check = print_file(file);
-						check = -4;
 						if(check == -3) {
 							error_handle(2, argv[file_count]);
 							continue;
