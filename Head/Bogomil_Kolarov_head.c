@@ -118,7 +118,7 @@ int print_file(int descriptor) {
 void error_handle(int err_num, char *file_name) {
 	char* error_message = NULL;
 
-	switch(err_num) {
+	switch(err_num) { //Every error has it's own num. There is a message for every error.
 		case 1: 
 			error_message = (char*) malloc(sizeof(char)*(strlen(file_name)+48));
 			strcpy(error_message, "Monkeys were unable to open \"");
@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
         if(argc == 1) {
                 check = stdin_support();
 				if(check == -1) {
-					error_handle(4, "no_file");
+					error_handle(4, "no_file"); //The function expects a second argument(name of file) but in this case there is no file.
 				}
                 return 0;
         } else {
