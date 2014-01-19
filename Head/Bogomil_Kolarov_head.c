@@ -21,18 +21,18 @@
 //--------------------------------------------
 int stdin_support() {
         int line_count = 0;
-        char buffer[1];
+        char buffer;
 
         while(line_count < 10) {
-                int read_bytes = read(STDIN_FILENO, buffer, 1);
+                int read_bytes = read(STDIN_FILENO, &buffer, 1);
 				if(read_bytes == -1) {
 					return -1;
 				}
-                int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);        
+                int write_bytes = write(STDOUT_FILENO, &buffer, read_bytes);        
 				if(write_bytes == -1) {
 					return -2;
 				}
-                if(*buffer == '\n' || *buffer == '\r' || *buffer == '\t') {
+                if(buffer == '\n' || buffer == '\r' || buffer == '\t') {
                         ++line_count;
                 }
         }
@@ -85,22 +85,22 @@ int print_header(char *file_name) {
 //--------------------------------------------
 int print_file(int descriptor) {
         int line_count = 0, read_bytes = 0;
-        char buffer[1];
+        char buffer;
 
         while(line_count < 10) {
-                read_bytes = read(descriptor, buffer, 1);
+                read_bytes = read(descriptor, &buffer, 1);
 				if(read_bytes == -1) {
 					printf("in if: ");
 					return -3;
 				}
                 if(read_bytes == 0) break;
 
-                int write_bytes = write(STDOUT_FILENO, buffer, read_bytes);
+                int write_bytes = write(STDOUT_FILENO, &buffer, read_bytes);
 				if(write_bytes == -1) {
 					return -4;
 				}
 				
-                if(*buffer == '\n') {
+                if(buffer == '\n') {
                         ++line_count;
                 }
         }
