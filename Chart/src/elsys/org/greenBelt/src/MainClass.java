@@ -20,14 +20,14 @@ public class MainClass {
 				break;
 			} 
 			
-			if(text[3].equals('b')) {
+			if(text[3].equals("b")) {
 				BarChart b = new BarChart(Integer.parseInt(text[0]), 
 						Integer.parseInt(text[1]), 
 						Integer.parseInt(text[2]));
 				chart.add(b);
 			}
 			
-			if(text[3].equals('p')) {
+			if(text[3].equals("p")) {
 				PieChart p = new PieChart(Integer.parseInt(text[0]), 
 						Integer.parseInt(text[1]), 
 						Integer.parseInt(text[2]));
