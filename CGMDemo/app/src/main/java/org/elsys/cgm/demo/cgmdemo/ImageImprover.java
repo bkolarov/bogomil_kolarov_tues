@@ -1,10 +1,12 @@
 package org.elsys.cgm.demo.cgmdemo;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 /**
  * Created by crash-id on 08.01.15.
@@ -13,20 +15,23 @@ public class ImageImprover {
     private Bitmap image;
     private Bitmap improvedImage;
     private ImageView imgView;
-    private int lastX;
-    private int lastY;
+    private Context context;
+
+    private boolean isExecuting = false;
 
     public ImageImprover(Bitmap image) {
         this.image = image;
-        this.lastX = image.getWidth() - 1;
-        this.lastY = image.getHeight() - 1;
+
     }
 
-    public ImageImprover(Bitmap image, ImageView imgView) {
+    public ImageImprover(Bitmap image, ImageView imgView, Context context) {
         this.image = image;
         this.imgView = imgView;
-        this.lastX = image.getWidth() - 1;
-        this.lastY = image.getHeight() - 1;
+        this.context = context;
+    }
+
+    public boolean isExecuting() {
+        return isExecuting;
     }
 
     public void applyContrast(Bitmap image, double contrastVal) {
@@ -54,13 +59,21 @@ public class ImageImprover {
         private double contrastVal;
         private Bitmap improvedImage;
 
+        @Override
+        protected void onPreExecute() {
+            isExecuting = true;
+            super.onPreExecute();
+        }
+
         public Calculation(double contrastVal) {
             this.contrastVal = contrastVal;
         }
 
         @Override
         protected void onPostExecute(Bitmap resultImage) {
+            isExecuting = false;
             imgView.setImageBitmap(resultImage);
+            Toast.makeText(context, "Better it is.", Toast.LENGTH_SHORT).show();
             super.onPostExecute(resultImage);
         }
 
@@ -85,6 +98,11 @@ public class ImageImprover {
                     improvedImage.setPixel(x, y, Color.argb(A, R, G, B));
                 }
             }
+
+            if(improvedImage == null) {
+                Log.e("ImageImprover", "improvedImage IS NULL");
+            }
+
             return improvedImage;
         }
 

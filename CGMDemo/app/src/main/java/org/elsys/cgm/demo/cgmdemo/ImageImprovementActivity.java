@@ -1,24 +1,35 @@
 package org.elsys.cgm.demo.cgmdemo;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
 
 
-public class ImageImprovementActivity extends ActionBarActivity {
+public class ImageImprovementActivity extends ActionBarActivity implements View.OnClickListener {
     private ImageView imageView;
     private Button buttonLoad;
+    private Button buttonSave;
     private Bitmap image;
+    private ImageImprover imgImprover;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,29 +37,87 @@ public class ImageImprovementActivity extends ActionBarActivity {
         setContentView(R.layout.activity_image_improvement);
 
         this.buttonLoad = (Button) findViewById(R.id.buttonLoad);
+        this.buttonSave = (Button) findViewById(R.id.buttonSave);
         this.imageView = (ImageView) findViewById(R.id.imageView);
-
         this.image = getImageFromIntent();
         this.imageView.setImageBitmap(image);
+        this.imgImprover = new ImageImprover(image, imageView, this);
 
-        //this.image = (Bitmap) getIntent().getParcelableArrayExtra("image");
+        this.buttonLoad.setOnClickListener(this);
+        this.buttonSave.setOnClickListener(this);
 
-/*
-        try {
-            imageView.setImageBitmap(getImage());
-        } catch (NullPointerException e) {
-            Toast.makeText(this, "Image Null", Toast.LENGTH_SHORT).show();
-        }
+    }
 
-        buttonLoad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Bitmap bmp = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
-                final ImageImprover imgImprover = new ImageImprover(bmp, imageView);
-                imgImprover.applyContrast(bmp, 50);
+    private void showDialogForContrast() {
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        final View viewLayout = inflater.inflate(R.layout.seekbar_layout,
+                (ViewGroup) findViewById(R.id.layout_dialog));
+
+        final TextView item1 = (TextView) viewLayout.findViewById(R.id.textViewProgress);
+
+
+        popDialog.setView(viewLayout);
+
+        SeekBar seek1 = (SeekBar) viewLayout.findViewById(R.id.seekBar1);
+        seek1.setMax(50);
+        seek1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                //Do something here with new value
+                item1.setText("" + progress);
+            }
+
+            public void onStartTrackingTouch(SeekBar arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+
             }
         });
-*/
+
+        popDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        final int value = Integer.parseInt(item1.getText().toString());
+
+                        if (value == 0 ) {
+                            return;
+                        }
+
+
+                        if (!imgImprover.isExecuting()) {
+                            imgImprover.applyContrast(image, value);
+                        }
+
+                        dialog.dismiss();
+                    }
+                });
+
+
+        popDialog.create();
+        popDialog.show();
+    }
+
+    private void showDialogForSaving() {
+        new AlertDialog.Builder(this)
+                .setTitle("Are you sure you want to save this picture?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        final FileManager fManager = new FileManager(Environment.getExternalStorageDirectory() + "/Contrastinator", getApplicationContext());
+                        fManager.saveBitmapToExternalStorage(((BitmapDrawable)imageView.getDrawable()).getBitmap());
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     private Bitmap getImageFromIntent() {
@@ -74,5 +143,17 @@ public class ImageImprovementActivity extends ActionBarActivity {
         }
 
         return null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonLoad:
+                showDialogForContrast();
+                break;
+            case R.id.buttonSave:
+                showDialogForSaving();
+                break;
+        }
     }
 }
