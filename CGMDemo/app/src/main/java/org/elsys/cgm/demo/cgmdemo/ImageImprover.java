@@ -84,7 +84,7 @@ public class ImageImprover {
             final int height = image.getHeight();
             int A, R, G, B;
             int pixel;
-            double contrast = Math.pow((100 + contrastVal) / 100, 2);
+            double contrast = Math.pow((100 + this.contrastVal) / 100, 2);
 
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
@@ -95,7 +95,7 @@ public class ImageImprover {
                     G = calculateContrastForColor(Color.green(pixel), contrast);
                     B = calculateContrastForColor(Color.blue(pixel), contrast);
 
-                    improvedImage.setPixel(x, y, Color.argb(A, R, G, B));
+                    this.improvedImage.setPixel(x, y, Color.argb(A, R, G, B));
                 }
             }
 
@@ -103,7 +103,7 @@ public class ImageImprover {
                 Log.e("ImageImprover", "improvedImage IS NULL");
             }
 
-            return improvedImage;
+            return this.improvedImage;
         }
 
         private int calculateContrastForColor(int color, double contrast) {

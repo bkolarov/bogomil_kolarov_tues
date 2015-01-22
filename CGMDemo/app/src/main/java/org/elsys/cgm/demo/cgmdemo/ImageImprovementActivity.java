@@ -3,6 +3,7 @@ package org.elsys.cgm.demo.cgmdemo;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -48,6 +49,14 @@ public class ImageImprovementActivity extends ActionBarActivity implements View.
 
     }
 
+    @Override
+    public void onBackPressed() {
+        final Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+        super.onBackPressed();
+    }
+
     private void showDialogForContrast() {
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
         final LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -61,11 +70,21 @@ public class ImageImprovementActivity extends ActionBarActivity implements View.
         popDialog.setView(viewLayout);
 
         SeekBar seek1 = (SeekBar) viewLayout.findViewById(R.id.seekBar1);
-        seek1.setMax(50);
+        seek1.setMax(100);
+        seek1.setProgress(50);
         seek1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
                 //Do something here with new value
-                item1.setText("" + progress);
+                final int contrastLevel;
+                if (progress == 50) {
+                    contrastLevel = 0;
+                } else if (progress < 50) {
+                    contrastLevel = (50 - progress)*(-1);
+                } else {
+                    contrastLevel = progress - 50;
+                }
+
+                item1.setText("" + contrastLevel);
             }
 
             public void onStartTrackingTouch(SeekBar arg0) {

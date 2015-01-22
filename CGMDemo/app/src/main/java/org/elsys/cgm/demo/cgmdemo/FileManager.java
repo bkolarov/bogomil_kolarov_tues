@@ -55,8 +55,7 @@ public class FileManager {
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(path + "/" + getCurrentDate() + ".png");
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-                // PNG is a lossless format, the compression factor (100) is ignored
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -68,6 +67,7 @@ public class FileManager {
                     e.printStackTrace();
                 }
             }
+
             return null;
         }
 
@@ -76,7 +76,7 @@ public class FileManager {
 
             final SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
             final String formattedDate = df.format(c.getTime());
-            return formattedDate;
+            return formattedDate + "-" + System.currentTimeMillis() % 1000;
         }
     }
 }
