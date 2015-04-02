@@ -1,0 +1,14 @@
+BEGIN TRANSACTION;
+CREATE TABLE Article (Id INTEGER PRIMARY KEY, created_on TEXT, url TEXT, published_on TEXT, Category_Id INTEGER, Tag_Id INTEGER);
+INSERT INTO "Article" VALUES(1,'16-10-2010','gmail.com','17-10-2010',1,1);
+INSERT INTO "Article" VALUES(2,'05-05-2010','cancel.com','16-09-2009',1,2);
+CREATE TABLE Category(Id INTEGER PRIMARY KEY, created_by TEXT, name VARCHAR(100));
+INSERT INTO "Category" VALUES(1,'Pesho','losho');
+INSERT INTO "Category" VALUES(2,'trivium','capsizing the sea');
+CREATE TABLE Tag (Id INTEGER PRIMARY KEY, priority INT, second_priority FLOAT, Article_Id INTEGER);
+INSERT INTO "Tag" VALUES(1,6,6.5,2);
+INSERT INTO "Tag" VALUES(2,3,6.0,1);
+CREATE TABLE User (Id INTEGER PRIMARY KEY, income FLOAT, created_on TEXT, description TEXT, Category_Id INTEGER);
+INSERT INTO "User" VALUES(1,12.8,'25-12-2015','capsizing the sea',1);
+INSERT INTO "User" VALUES(2,127.001,'02-01-2013','long d escription text bla bla bla',2);
+COMMIT;
